@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evento Trading - Resultados</title>
+  <style>
+    /* ---- Tipografías ---- */
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Poppins:wght@400;600&display=swap');
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: #0a0a14;
+      color: #f5f5f5;
+      overflow-x: hidden;
+    }
+
+    /* Fondo */
+    canvas#bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -2;
+    }
+
+    canvas#candles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      opacity: 0.2;
+    }
+
+    /* ---- Contenedor ---- */
+    .wrapper {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* ---- Header ---- */
+    header {
+      font-family: "Merriweather", serif;
+      text-align: center;
+      padding: 35px 20px;
+      font-size: 3rem;
+      font-weight: 700;
+      color: #ffd700;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      margin-bottom: 50px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    /* ---- Ranking ---- */
+    h2 {
+      font-size: 2rem;
+      color: #a899ff;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .participants {
+      display: grid;
+      gap: 20px;
+      padding: 0;
+      list-style: none;
+      max-width: 650px;
+      margin: 0 auto 40px auto;
+    }
+
+    .participants li {
+      background: rgba(255, 255, 255, 0.07);
+      padding: 20px 30px;
+      border-radius: 14px;
+      font-size: 1.15rem;
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .participants li:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    }
+
+    .highlight {
+      background: linear-gradient(135deg, #2a2a7a, #6f4cff);
+      border: 2px solid gold;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 0 15px rgba(255,215,0,0.8);
+    }
+
+    .highlight span { color: gold; }
+
+    .crown {
+      position: absolute;
+      top: -35px; left: 25px;
+      font-size: 2rem;
+      color: gold;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      50% { transform: translateY(-12px); }
+    }
+
+    /* ---- Mensaje ---- */
+    .message {
+      font-size: 1.2rem;
+      background: rgba(255,255,255,0.08);
+      padding: 35px;
+      border-radius: 16px;
+      line-height: 1.8;
+      border-left: 6px solid #ffd700;
+      max-width: 750px;
+      margin: 40px auto;
+    }
+    .message strong { color: #ffd700; }
+
+    /* ---- Perfil ---- */
+    .perfil h2 { color: #ffd700; }
+    .skills {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+    .skill {
+      background: rgba(255,255,255,0.07);
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      border-top: 3px solid gold;
+    }
+    .skill h3 { color: gold; margin-bottom: 10px; }
+
+    /* ---- Barras de progreso ---- */
+    .bar {
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      overflow: hidden;
+      height: 12px;
+      margin-top: 8px;
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, gold, orange);
+      width: 0;
+      animation: fill 2s forwards;
+    }
+    @keyframes fill { to { width: var(--value); } }
+
+    /* ---- Certificado ---- */
+    .certificado {
+      margin: 70px auto;
+      max-width: 800px;
+      background: #111;
+      border: 3px solid gold;
+      border-radius: 20px;
+      padding: 50px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(255,215,0,0.4);
+    }
+    .certificado h2 {
+      color: gold;
+      font-family: "Merriweather", serif;
+      font-size: 2.2rem;
+    }
+    .certificado h3 {
+      font-size: 1.8rem;
+      color: #fff;
+      margin-top: 20px;
+    }
+    .certificado p { color: #ccc; margin-top: 15px; }
+
+    /* ---- Footer ---- */
+    footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+      color: #888;
+      font-size: 0.9rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+  <canvas id="candles"></canvas>
+
+  <div class="wrapper">
+    <header>Evento Trading - Resultados</header>
+
+    <h2>Ranking de Participantes</h2>
+    <ul class="participants">
+      <li>1. Carlos Gómez</li>
+      <li class="highlight">
+        <div class="crown">👑</div>
+        2. <span>Brahian Sosa</span>
+      </li>
+      <li>3. Lucía Fernández</li>
+      <li>4. Martín Rodríguez</li>
+      <li>5. Sofía Méndez</li>
+    </ul>
+
+    <div class="message">
+      <strong>¡Felicidades Brahian Sosa!</strong><br><br>
+      Tu desempeño en este evento refleja un dominio sólido en <b>análisis técnico</b>, 
+      <b>gestión del riesgo</b>, y <b>estrategias de trading algorítmico</b>.  
+      Te has posicionado en el <b>puesto #2</b>, confirmando que tu visión estratégica y disciplina
+      te destacan como trader profesional. 🚀📈
+    </div>
+
+    <!-- Perfil -->
+    <div class="perfil">
+      <h2>Perfil de Trader</h2>
+      <div class="skills">
+        <div class="skill">
+          <h3>📊 Análisis Técnico</h3>
+          <div class="bar"><span style="--value: 95%"></span></div>
+        </div>
+        <div class="skill">
+          <h3>⚖️ Gestión de Riesgo</h3>
+          <div class="bar"><span style="--value: 90%"></span></div>
+        </div>
+        <div class="skill">
+          <h3>💰 Criptomonedas</h3>
+          <div class="bar"><span style="--value: 85%"></span></div>
+        </div>
+        <div class="skill">
+          <h3>💱 Forex</h3>
+          <div class="bar"><span style="--value: 80%"></span></div>
+        </div>
+        <div class="skill">
+          <h3>🤖 Trading Algorítmico</h3>
+          <div class="bar"><span style="--value: 75%"></span></div>
+        </div>
+        <div class="skill">
+          <h3>🧠 Psicología del Trading</h3>
+          <div class="bar"><span style="--value: 88%"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificado -->
+    <div class="certificado">
+      <h2>Certificado de Reconocimiento</h2>
+      <h3>Brahian Sosa</h3>
+      <p>Por destacarse en el Evento de Trading, alcanzando el puesto #2 y demostrando excelencia en estrategias financieras.</p>
+    </div>
+  </div>
+
+  <footer>Powered by Trading Skills • 2025</footer>
+
+  <script>
+    /* Fondo partículas */
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+    canvas.width = innerWidth; canvas.height = innerHeight;
+    const particles = [];
+    for (let i=0;i<70;i++){
+      particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,
+        r:Math.random()*2+1,sx:(Math.random()-0.5)*0.6,sy:(Math.random()-0.5)*0.6});
+    }
+    function animateParticles(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p=>{
+        p.x+=p.sx; p.y+=p.sy;
+        if(p.x<0||p.x>canvas.width) p.sx*=-1;
+        if(p.y<0||p.y>canvas.height) p.sy*=-1;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle="rgba(255,215,0,0.7)"; ctx.fill();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* Gráfico de velas japonesas */
+    const c2 = document.getElementById("candles");
+    const ctx2 = c2.getContext("2d");
+    c2.width = innerWidth; c2.height = innerHeight;
+    function drawCandle(x,open,close,high,low,color){
+      ctx2.strokeStyle=color; ctx2.beginPath();
+      ctx2.moveTo(x,high); ctx2.lineTo(x,low); ctx2.stroke();
+      ctx2.fillStyle=color;
+      ctx2.fillRect(x-3,Math.min(open,close),6,Math.abs(open-close));
+    }
+    let offset=0;
+    function animateCandles(){
+      ctx2.clearRect(0,0,c2.width,c2.height);
+      for(let i=0;i<60;i++){
+        let x=i*20+offset;
+        let open=200+Math.sin((i+offset/20)/5)*50+100;
+        let close=open+(Math.random()*40-20);
+        let high=Math.max(open,close)+20;
+        let low=Math.min(open,close)-20;
+        let color=close>open?"#00ff88":"#ff4444";
+        drawCandle(x,open,close,high,low,color);
+      }
+      offset+=2; if(offset>20) offset=0;
+      requestAnimationFrame(animateCandles);
+    }
+    animateCandles();
+  </script>
+</body>
+</html>
